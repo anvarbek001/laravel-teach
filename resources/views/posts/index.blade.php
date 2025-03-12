@@ -8,20 +8,23 @@
             </form>
             <div class="btn d-flex">
                 @auth
+                    <p class="m-2">{{ auth()->user()->name }}</p>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button class="btn btn-dark">Chiqish</button>
+                        <a type="button" class="btn btn-outline-dark mx-2" href="{{ route('weather') }}">ob havo
+                            ma'lumotlari</a>
                     </form>
                     @if (auth()->user()->hasRole('admin'))
                         <a href="{{ route('posts.create') }}" type="button" class="btn btn-primary mx-2">Create</a>
-                        <a type="button" class="btn btn-success" href="{{ route('send-email') }}">Email xabar yuborish</a>
-                        <a type="button" class="btn btn-success" href="{{ route('sms.form') }}">sms xabar yuborish</a>
+                        <a type="button" class="btn btn-success mx-2" href="{{ route('send-email') }}">Email xabar
+                            yuborish</a>
+                        <a type="button" class="btn btn-success mx-2" href="{{ route('sms.form') }}">sms xabar yuborish</a>
                     @endif
-                    <p>{{ auth()->user()->name }}</p>
                     @if (auth()->user()->hasRole('seller'))
                         <a href="{{ route('posts.create') }}" type="button" class="btn btn-primary mx-2">Create</a>
-                        <a type="button" class="btn btn-success mx-2" href="/">Account</a>
                         <a type="button" class="btn btn-success" href="{{ route('send-email') }}">Email xabar yuborish</a>
+                        <a type="button" class="btn btn-success mx-2" href="{{ route('sms.form') }}">sms xabar yuborish</a>
                     @endif
                     {{-- <h4 class="mx-3">{{ auth()->user() }}</h4> --}}
                 @else
@@ -64,7 +67,7 @@
                             <td>
                                 <img style="width: 10%;" src="{{ asset('storage/' . $post->photo) }}"><br>
                                 <a
-                                href="{{ route('posts.show', ['date' => $post->created_at->format('Y-m-d'), 'slug' => $post->slug]) }}">{{ $post->short_content }}</a>
+                                    href="{{ route('posts.show', ['date' => $post->created_at->format('Y-m-d'), 'slug' => $post->slug]) }}">{{ $post->short_content }}</a>
                             </td>
                             <td>
                                 {{ $post->created_at }}
@@ -106,6 +109,13 @@
         </div>
 
         {{ $posts->links() }}
+
+        <script>
+            let alert = document.querySelector('.alert-primary');
+            setTimeout(() => {
+                alert.style.display = 'none'
+            }, '5000');
+        </script>
 
     </div>
 </x-layouts.main>

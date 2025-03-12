@@ -26,12 +26,11 @@ class MailController extends Controller
                 $message->to($request->input('email')) // Foydalanuvchidan kelgan email manzil
                     ->subject('Test Email'); // Mavzu
             });
-            return redirect()->route('posts.index')->with('success', "Email muvaffaqiyatli jo'natildi!");
+
+            return response()->json(['success' => true, 'message' => 'Email muvaffaqiyatli jo\'natildi!']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
-
-
     }
 
 

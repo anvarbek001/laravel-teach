@@ -36,7 +36,7 @@ class SmsController extends Controller
 
     // Blade'ga ma'lumotni qaytaramiz
     // return view('sms.sms', ['response' => $response]);
-    return redirect()->route('posts.index');
+    return redirect()->route('posts.index')->with('success','sms muvaffaqiyatli yuborildi');
 }
 
 

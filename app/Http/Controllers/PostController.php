@@ -16,7 +16,7 @@ class PostController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except(['index','show']);
+        $this->middleware('auth')->except(['index', 'show']);
     }
 
     public function index()
@@ -44,26 +44,28 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->hasFile('photo')){
-            $name = $request->file('photo')->getClientOriginalName();
-            $path = $request->file('photo')->storeAs('post-photo',$name, 'public');
-        }
-
+        // dd($request);
 
         $request->validate([
-            'user' =>auth()->user()->name,
+            'user' => auth()->user()->name,
             'title' => 'required|max:255',
             'short_content' => 'required',
             'content' => 'required',
-            'photo' => 'required'
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
+
+        if ($request->hasFile('photo')) {
+            // dd($request->file('photo')->getClientOriginalName(), $request->file('photo')->getMimeType());
+            $name = time() . '.' . $request->file('photo')->getClientOriginalName();
+            $path = $request->file('photo')->storeAs('post-photo', $name, 'public');
+        }
 
         $post = Post::create([
             'user_id' => Auth::user()->id,
             'title' => $request->title,
             'short_content' => $request->short_content,
             'content' => $request->content,
-            'photo' => $path ?? null,
+            'photo' => $path,
         ]);
 
 
@@ -72,7 +74,7 @@ class PostController extends Controller
 
         TestJob::dispatch($post);
 
-        return redirect()->route('posts.index')->with('success' , 'post yaratildi');
+        return redirect()->route('posts.index')->with('success', 'post yaratildi');
     }
 
     /**
@@ -83,10 +85,10 @@ class PostController extends Controller
      */
     public function show($date, $slug)
     {
-         // YYYY-MM-DD formatda sanani tekshiramiz
-         $post = Post::whereDate('created_at', $date)
-                    ->where('slug', $slug)
-                    ->firstOrFail();
+        // YYYY-MM-DD formatda sanani tekshiramiz
+        $post = Post::whereDate('created_at', $date)
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         return view('posts.show', compact('post'));
     }
@@ -97,12 +99,12 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($date,$slug)
+    public function edit($date, $slug)
     {
 
         $post = Post::whereDate('created_at', $date)
-                    ->where('slug', $slug)
-                    ->firstOrFail();
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         return view('posts.edit', compact('post'));
     }
@@ -117,23 +119,23 @@ class PostController extends Controller
     public function update(Request $request, $date, $slug)
     {
         $post = Post::whereDate('created_at', $date)
-                    ->where('slug', $slug)
-                    ->firstOrFail();
+            ->where('slug', $slug)
+            ->firstOrFail();
         Gate::authorize('update-post', $post);
 
-        if($request->hasFile('photo')){
+        if ($request->hasFile('photo')) {
             $url = Storage::url('post-photo/' . $post->photo);
 
-            if(isset($url) && Storage::exists('post-photo/' . $post->photo)){
+            if (isset($url) && Storage::exists('post-photo/' . $post->photo)) {
                 Storage::delete($url . $post->photo,);
             }
 
             $name = $request->file('photo')->getClientOriginalName();
-            $path = $request->file('photo')->storeAs('post-photo',$name, 'public');
+            $path = $request->file('photo')->storeAs('post-photo', $name, 'public');
         }
 
         $request->validate([
-            'user' =>auth()->user()->name,
+            'user' => auth()->user()->name,
             'title' => 'required|max:255',
             'short_content' => 'required',
             'content' => 'required',
@@ -157,13 +159,14 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($date,$slug) {
+    public function destroy($date, $slug)
+    {
         $post = Post::whereDate('created_at', $date)
-                    ->where('slug', $slug)
-                    ->firstOrFail();
+            ->where('slug', $slug)
+            ->firstOrFail();
 
-        if(isset($post->photo)){
-            Storage::delete($post->photo);
+        if (isset($post->photo)) {
+            Storage::delete('public/' . $post->photo);
         }
 
         $post->delete();

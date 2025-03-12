@@ -59,7 +59,7 @@ class AuthController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('posts.index');
+        return redirect()->route('posts.index');
     }
 
     public function seller(){

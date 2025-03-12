@@ -5,6 +5,7 @@ use App\Http\Controllers\MailController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SmsController;
+use App\Http\Controllers\WeatherController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,6 +18,11 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/weather/{city}', [WeatherController::class, 'getWeather'])->name('getWeather');
+Route::get('/weather', function () {
+    return view('weather');
+})->name('weather');
 
 Route::get('/send-email', [MailController::class, 'showMailForm'])->name('send-email-form');
 Route::post('/send-email', [MailController::class, 'sendEmail'])->name('send-email');
@@ -47,4 +53,4 @@ Route::put('/posts/{date}/{slug}', [PostController::class, 'update'])->name('pos
 Route::delete('/posts/{date}/{slug}', [PostController::class, 'destroy'])->name('posts.destroy');  // Postni o'chirish
 
 
-Route::get('search',[SearchController::class,'search'])->name('search');
+Route::get('search', [SearchController::class, 'search'])->name('search');
